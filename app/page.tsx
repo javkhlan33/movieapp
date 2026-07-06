@@ -10,9 +10,9 @@ export default function Home() {
     <div className="w-full h-screen ">
       <Header />
       <Head />
-      <MovieList genre="Upcoming" />
-      <MovieList genre="Popular" />
-      <MovieList genre="Top Rated" />
+      <MovieList genre="Upcoming" link="/upcoming" />
+      <MovieList genre="Popular" link="/popular" />
+      <MovieList genre="Top Rated" link="/toprated" />
       <Footer />
     </div>
   );

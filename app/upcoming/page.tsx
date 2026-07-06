@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="w-full h-screen ">
       <Header />
-      <MovieList genre="Upcoming" />
+      <MovieList genre="Upcoming" link="/upcoming" />
       <Footer />
     </div>
   );
