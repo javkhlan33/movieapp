@@ -2,72 +2,88 @@
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { heroMovies } from "../_utils/heromovies";
-import { use, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import Autoplay from "embla-carousel-autoplay";
+import { useRef } from "react";
 
-export default function Head() {
-  const [movieIndex, setMovieIndex] = useState(0);
-  const movie = heroMovies[movieIndex];
-  const handleBackMovie = () => {
-    setMovieIndex((movieIndex - 1 + heroMovies.length) % heroMovies.length);
-  };
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Link from "next/link";
 
-  const handleNextMovie = () => {
-    setMovieIndex((movieIndex + 1) % heroMovies.length);
-  };
-  return (
-    <section className="relative mx-auto w-full max-w-[1440px]">
-      <Image
-        src={heroMovies[movieIndex].image}
-        alt={heroMovies[movieIndex].title}
-        width={1280}
-        height={600}
-        className="h-[600px] w-full object-cover"
-        priority
-      />
-      <div className="absolute left-[140px] top-1/2 -translate-y-1/2 z-10">
-        <div className="flex flex-col ">
-          <p className="text-lg text-white">Now Playing:</p>
+type Movie = {
+  id: number;
+  title: string;
+  poster_path: string;
+  vote_average: number;
+  overview: string;
+};
 
-          <h1 className="text-5xl font-bold text-white">
-            {heroMovies[movieIndex].title}
-          </h1>
+type HeadProps = {
+  movies: Movie[];
+};
 
-          <div className="flex items-center gap-2">
-            <Image src="/star.png" alt="star" width={20} height={20} />
-
-            <span className="text-white font-bold text-lg">
-              {heroMovies[movieIndex].rating}
-              <span className="text-gray-300">/10</span>
-            </span>
-          </div>
-
-          <p className="w-[320px] text-sm leading-6 text-white">
-            {heroMovies[movieIndex].description}
-          </p>
-
-          <Button className="w-fit bg-white text-black hover:bg-gray-100 mt-2.5">
-            <Image src="/play.png" alt="play" width={16} height={16} />
-            Watch Trailer
-          </Button>
-        </div>
-      </div>
-      <Button
-        onClick={handleBackMovie}
-        size="icon"
-        className="absolute left-8 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white text-black"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="secondary"
-        size="icon"
-        className="absolute right-8 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-[#F4F4F5] hover:bg-gray-200"
-        onClick={handleNextMovie}
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
-    </section>
+export const Head = ({ movies }: HeadProps) => {
+  const heroAutoplay = useRef(
+    Autoplay({
+      delay: 5000,
+      stopOnInteraction: false,
+    }),
   );
-}
+
+  return (
+    <Carousel
+      className="mx-auto w-full max-w-[1440px]"
+      opts={{ loop: true }}
+      plugins={[heroAutoplay.current]}
+    >
+      <CarouselContent>
+        {movies.map((movie) => (
+          <CarouselItem key={movie.id}>
+            <section className="relative">
+              <Link href={`/movie/${movie.id}`}>
+                <Image
+                  src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+                  alt={movie.title}
+                  width={1440}
+                  height={600}
+                  className="h-[600px] w-full object-cover"
+                />
+              </Link>
+
+              <div className="absolute left-[140px] top-1/2 -translate-y-1/2 z-10">
+                <p className="text-lg text-white">Now Playing:</p>
+
+                <h1 className="text-5xl font-bold text-white">{movie.title}</h1>
+
+                <div className="flex items-center gap-2 mt-3">
+                  <Image src="/star.png" alt="star" width={20} height={20} />
+
+                  <span className="text-white font-bold text-lg">
+                    {movie.vote_average.toFixed(1)}
+                    <span className="text-gray-300"> /10</span>
+                  </span>
+                </div>
+
+                <p className="mt-4 w-[420px] text-sm leading-6 text-white line-clamp-4">
+                  {movie.overview}
+                </p>
+
+                <Button className="mt-5 bg-white text-black hover:bg-gray-100">
+                  <Image src="/play.png" alt="play" width={16} height={16} />
+                  Watch Trailer
+                </Button>
+              </div>
+            </section>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+
+      <CarouselPrevious className="left-8" />
+      <CarouselNext className="right-8" />
+    </Carousel>
+  );
+};

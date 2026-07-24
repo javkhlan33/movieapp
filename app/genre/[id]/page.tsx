@@ -1,7 +1,6 @@
-"use client";
 import Header from "@/app/_components/header";
-import { MovieList } from "@/app/_components/movieList";
 import Footer from "@/app/_components/footer";
+import { MovieList } from "@/app/_components/movieList";
 
 import {
   Pagination,
@@ -12,34 +11,42 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useEffect, useState } from "react";
 
 const API_KEY = "502c1ed7cb7d214347c2fb36ce415a4e";
 const BASE_URL = "https://api.themoviedb.org/3";
-const ENDPOINT_POPULAR = `/movie/popular?language=en-US&page=1`;
 
-export default function PopularPage() {
-  const [popularMovies, setPopularMovies] = useState<any[]>([]);
-  const fetchPopularMovies = async () => {
-    const response = await fetch(
-      `${BASE_URL}${ENDPOINT_POPULAR}&api_key=${API_KEY}`,
-    );
-    const data = await response.json();
-    setPopularMovies(data.results);
-  };
-  useEffect(() => {
-    fetchPopularMovies();
-  }, []);
+export default async function GenrePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const response = await fetch(
+    `${BASE_URL}/discover/movie?with_genres=${id}&language=en-US&page=1&api_key=${API_KEY}`,
+  );
+
+  const data = await response.json();
+
+  const genreResponse = await fetch(
+    `${BASE_URL}/genre/movie/list?language=en-US&api_key=${API_KEY}`,
+  );
+
+  const genreData = await genreResponse.json();
+
+  const currentGenre = genreData.genres.find(
+    (genre: any) => genre.id === Number(id),
+  );
 
   return (
-    <div className="w-full min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header />
 
       <main className="flex-1">
         <MovieList
-          genre="Popular"
-          link="/popular"
-          movies={popularMovies}
+          genre={currentGenre.name}
+          link=""
+          movies={data.results}
           seemore={false}
         />
 

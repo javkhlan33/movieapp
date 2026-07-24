@@ -1,7 +1,6 @@
-"use client";
-import Header from "@/app/_components/header";
-import { MovieList } from "@/app/_components/movieList";
-import Footer from "@/app/_components/footer";
+import Footer from "../_components/footer";
+import Header from "../_components/header";
+import { MovieList } from "../_components/movieList";
 
 import {
   Pagination,
@@ -12,24 +11,22 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useEffect, useState } from "react";
 
 const API_KEY = "502c1ed7cb7d214347c2fb36ce415a4e";
 const BASE_URL = "https://api.themoviedb.org/3";
-const ENDPOINT_POPULAR = `/movie/popular?language=en-US&page=1`;
 
-export default function PopularPage() {
-  const [popularMovies, setPopularMovies] = useState<any[]>([]);
-  const fetchPopularMovies = async () => {
-    const response = await fetch(
-      `${BASE_URL}${ENDPOINT_POPULAR}&api_key=${API_KEY}`,
-    );
-    const data = await response.json();
-    setPopularMovies(data.results);
-  };
-  useEffect(() => {
-    fetchPopularMovies();
-  }, []);
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ query: string }>;
+}) {
+  const { query } = await searchParams;
+
+  const response = await fetch(
+    `${BASE_URL}/search/movie?query=${query}&language=en-US&page=1&api_key=${API_KEY}`,
+  );
+
+  const data = await response.json();
 
   return (
     <div className="w-full min-h-screen flex flex-col">
@@ -37,9 +34,9 @@ export default function PopularPage() {
 
       <main className="flex-1">
         <MovieList
-          genre="Popular"
-          link="/popular"
-          movies={popularMovies}
+          genre={`Search results for "${query}"`}
+          link=""
+          movies={data.results}
           seemore={false}
         />
 
