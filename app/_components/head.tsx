@@ -20,6 +20,7 @@ type Movie = {
   poster_path: string;
   vote_average: number;
   overview: string;
+  backdrop_path: string;
 };
 
 type HeadProps = {
