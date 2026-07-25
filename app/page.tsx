@@ -1,7 +1,6 @@
 "use client";
 
 import Header from "./_components/header";
-
 import { MovieList } from "./_components/movieList";
 import Footer from "./_components/footer";
 import { useEffect, useState } from "react";
@@ -9,10 +8,10 @@ import { Head } from "./_components/head";
 
 const API_KEY = "502c1ed7cb7d214347c2fb36ce415a4e";
 const BASE_URL = "https://api.themoviedb.org/3";
+
 const ENDPOINT_UPCOMING = `/movie/upcoming?language=en-US&page=1`;
 const ENDPOINT_POPULAR = `/movie/popular?language=en-US&page=1`;
 const ENDPOINT_TOP_RATED = `/movie/top_rated?language=en-US&page=1`;
-const API_URL = `${BASE_URL}${ENDPOINT_UPCOMING}&api_key=${API_KEY}`;
 
 export default function Home() {
   const [upcomingMovies, setUpcomingMovies] = useState<any[]>([]);
@@ -20,15 +19,39 @@ export default function Home() {
   const [topRatedMovies, setTopRatedMovies] = useState<any[]>([]);
 
   const fetchUpcomingMovies = async () => {
-    const response = await fetch(API_URL);
+    const response = await fetch(
+      `${BASE_URL}${ENDPOINT_UPCOMING}&api_key=${API_KEY}`,
+    );
+
     const data = await response.json();
-    setUpcomingMovies(data.results);
+
+    const moviesWithTrailer = await Promise.all(
+      data.results.map(async (movie: any) => {
+        const videoResponse = await fetch(
+          `${BASE_URL}/movie/${movie.id}/videos?language=en-US&api_key=${API_KEY}`,
+        );
+
+        const videoData = await videoResponse.json();
+
+        const trailer = videoData.results.find(
+          (video: any) => video.type === "Trailer" && video.site === "YouTube",
+        );
+
+        return {
+          ...movie,
+          trailer,
+        };
+      }),
+    );
+
+    setUpcomingMovies(moviesWithTrailer);
   };
 
   const fetchPopularMovies = async () => {
     const response = await fetch(
       `${BASE_URL}${ENDPOINT_POPULAR}&api_key=${API_KEY}`,
     );
+
     const data = await response.json();
     setPopularMovies(data.results);
   };
@@ -37,6 +60,7 @@ export default function Home() {
     const response = await fetch(
       `${BASE_URL}${ENDPOINT_TOP_RATED}&api_key=${API_KEY}`,
     );
+
     const data = await response.json();
     setTopRatedMovies(data.results);
   };
@@ -48,9 +72,11 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-full h-screen ">
+    <div className="w-full min-h-screen">
       <Header />
+
       <Head movies={upcomingMovies} />
+
       <MovieList
         genre="Upcoming"
         link="/upcoming"
@@ -68,6 +94,7 @@ export default function Home() {
         link="/toprated"
         movies={topRatedMovies.slice(0, 10)}
       />
+
       <Footer />
     </div>
   );

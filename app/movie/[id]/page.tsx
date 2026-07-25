@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { MovieCard } from "@/app/_components/movieCard";
+import TrailerPlayer from "@/app/_components/trailer";
 
 const API_KEY = "502c1ed7cb7d214347c2fb36ce415a4e";
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -25,7 +26,15 @@ export default async function MovieDetailPage({
   );
 
   const similarMovies = await similarResponse.json();
+  const videoResponse = await fetch(
+    `${BASE_URL}/movie/${id}/videos?language=en-US&api_key=${API_KEY}`,
+  );
 
+  const videoData = await videoResponse.json();
+  const trailer = videoData.results.find(
+    (video: any) => video.type === "Trailer" && video.site === "YouTube",
+  );
+  console.log(trailer);
   if (movie.success === false) {
     return <div>Movie not found</div>;
   }
@@ -66,6 +75,12 @@ export default async function MovieDetailPage({
               fill
               className="rounded-lg object-cover"
             />
+
+            {trailer && (
+              <div className="absolute bottom-5 left-5">
+                <TrailerPlayer trailer={trailer} />
+              </div>
+            )}
           </div>
         </div>
 

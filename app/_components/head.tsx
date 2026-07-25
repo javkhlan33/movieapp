@@ -1,9 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Autoplay from "embla-carousel-autoplay";
+import Link from "next/link";
 import { useRef } from "react";
+import Autoplay from "embla-carousel-autoplay";
+
+import TrailerPlayer from "./trailer";
 
 import {
   Carousel,
@@ -12,7 +14,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Link from "next/link";
 
 type Movie = {
   id: number;
@@ -21,6 +22,10 @@ type Movie = {
   vote_average: number;
   overview: string;
   backdrop_path: string;
+  trailer?: {
+    key: string;
+    name: string;
+  };
 };
 
 type HeadProps = {
@@ -55,15 +60,17 @@ export const Head = ({ movies }: HeadProps) => {
                 />
               </Link>
 
-              <div className="absolute left-[140px] top-1/2 -translate-y-1/2 z-10">
-                <p className="text-lg text-white">Now Playing:</p>
+              <div className="absolute left-[140px] top-1/2 z-10 -translate-y-1/2">
+                <p className="text-lg text-white">Now Playing</p>
 
-                <h1 className="text-5xl font-bold text-white">{movie.title}</h1>
+                <h1 className="mt-2 text-5xl font-bold text-white">
+                  {movie.title}
+                </h1>
 
-                <div className="flex items-center gap-2 mt-3">
+                <div className="mt-3 flex items-center gap-2">
                   <Image src="/star.png" alt="star" width={20} height={20} />
 
-                  <span className="text-white font-bold text-lg">
+                  <span className="text-lg font-bold text-white">
                     {movie.vote_average.toFixed(1)}
                     <span className="text-gray-300"> /10</span>
                   </span>
@@ -73,10 +80,13 @@ export const Head = ({ movies }: HeadProps) => {
                   {movie.overview}
                 </p>
 
-                <Button className="mt-5 bg-white text-black hover:bg-gray-100">
-                  <Image src="/play.png" alt="play" width={16} height={16} />
-                  Watch Trailer
-                </Button>
+                <div className="mt-6">
+                  {movie.trailer ? (
+                    <TrailerPlayer trailer={movie.trailer} />
+                  ) : (
+                    <p className="text-white">Trailer not available</p>
+                  )}
+                </div>
               </div>
             </section>
           </CarouselItem>
