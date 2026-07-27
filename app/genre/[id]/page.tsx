@@ -1,6 +1,8 @@
+import Link from "next/link";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
-import { MovieList } from "@/app/_components/movieList";
+import { MovieCard } from "@/app/_components/movieCard";
+import { Button } from "@/components/ui/button";
 
 import {
   Pagination,
@@ -17,17 +19,24 @@ const BASE_URL = "https://api.themoviedb.org/3";
 
 export default async function GenrePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const { id } = await params;
+  const { page } = await searchParams;
 
+  const currentPage = Number(page) || 1;
+  // Movies
   const response = await fetch(
-    `${BASE_URL}/discover/movie?with_genres=${id}&language=en-US&page=1&api_key=${API_KEY}`,
+    `${BASE_URL}/discover/movie?with_genres=${id}&language=en-US&page=${currentPage}&api_key=${API_KEY}`,
   );
 
   const data = await response.json();
+  const totalPages = Math.min(data.total_pages, 500);
 
+  // Genres
   const genreResponse = await fetch(
     `${BASE_URL}/genre/movie/list?language=en-US&api_key=${API_KEY}`,
   );
@@ -39,47 +48,98 @@ export default async function GenrePage({
   );
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col">
       <Header />
 
       <main className="flex-1">
-        <MovieList
-          genre={currentGenre.name}
-          link=""
-          movies={data.results}
-          seemore={false}
-        />
+        <div className="mx-auto flex max-w-[1280px] gap-10 px-8 py-10">
+          {/* LEFT */}
+          <div className="w-[320px]">
+            <h2 className="text-3xl font-semibold">Genres</h2>
 
-        <div className="flex justify-center py-8">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
+            <p className="mt-2 text-gray-500">See lists of movies by genre</p>
 
-              <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  1
-                </PaginationLink>
-              </PaginationItem>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {genreData.genres.map((genre: any) => (
+                <Link key={genre.id} href={`/genre/${genre.id}`}>
+                  <Button
+                    variant={genre.id === Number(id) ? "default" : "outline"}
+                  >
+                    {genre.name}
+                  </Button>
+                </Link>
+              ))}
+            </div>
+          </div>
 
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
+          {/* RIGHT */}
+          <div className="flex-1">
+            <h1 className="text-4xl font-bold">{currentGenre?.name}</h1>
 
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
+            {data.results.length > 0 ? (
+              <div className="mt-8 grid grid-cols-4 gap-6">
+                {data.results.map((movie: any) => (
+                  <MovieCard
+                    key={movie.id}
+                    id={movie.id}
+                    image={movie.poster_path}
+                    title={movie.title}
+                    rating={movie.vote_average}
+                    size="small"
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="mt-8 flex h-28 items-center justify-center rounded-lg border">
+                No movies found.
+              </div>
+            )}
 
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
+            <div className="flex justify-center py-10">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href={`/genre/${id}?page=${Math.max(currentPage - 1, 1)}`}
+                    />
+                  </PaginationItem>
 
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                  {Array.from(
+                    { length: Math.min(5, totalPages) },
+                    (_, index) => {
+                      const pageNumber = index + 1;
+
+                      return (
+                        <PaginationItem key={pageNumber}>
+                          <PaginationLink
+                            href={`/genre/${id}?page=${pageNumber}`}
+                            isActive={currentPage === pageNumber}
+                          >
+                            {pageNumber}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    },
+                  )}
+
+                  {totalPages > 5 && (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href={`/genre/${id}?page=${Math.min(
+                        currentPage + 1,
+                        totalPages,
+                      )}`}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          </div>
         </div>
       </main>
 

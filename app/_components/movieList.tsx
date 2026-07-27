@@ -15,9 +15,9 @@ export const MovieList = ({
   seemore?: boolean;
 }) => {
   return (
-    <section className="mx-auto max-w-[1440px] px-20 py-10 ">
-      <div className="flex w-full items-center justify-between mb-8">
-        <h2 className="text-3xl font-semibold">{genre}</h2>
+    <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 sm:py-10 lg:px-20">
+      <div className="mb-6 flex items-center justify-between sm:mb-8">
+        <h2 className="text-2xl font-semibold sm:text-3xl">{genre}</h2>
 
         {seemore && (
           <Link href={link}>
@@ -29,7 +29,7 @@ export const MovieList = ({
         )}
       </div>
 
-      <div className="flex flex-wrap gap-8">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-5 lg:gap-8">
         {movies.map((movie) => (
           <MovieCard
             key={movie.id}

@@ -56,35 +56,44 @@ export const Head = ({ movies }: HeadProps) => {
                   alt={movie.title}
                   width={1440}
                   height={600}
-                  className="h-[600px] w-full object-cover"
+                  className="h-[220px] w-full object-cover sm:h-[320px] lg:h-[600px]"
                 />
               </Link>
+              <CarouselPrevious className="lg:left-8" />
+              <CarouselNext className="lg:right-8" />
 
-              <div className="absolute left-[140px] top-1/2 z-10 -translate-y-1/2">
-                <p className="text-lg text-white">Now Playing</p>
+              <div className=" px-4 py-5  lg:absolute lg:left-[140px] lg:top-1/2 lg:z-10 lg:w-[420px] lg:-translate-y-1/2 lg:bg-transparent">
+                <p className="text-sm text-black dark:text-white sm:text-base lg:text-lg lg:text-white">
+                  Now Playing
+                </p>
 
-                <h1 className="mt-2 text-5xl font-bold text-white">
+                <h1 className="mt-2 text-3xl font-bold text-black dark:text-white sm:text-4xl lg:text-5xl lg:text-white">
                   {movie.title}
                 </h1>
 
                 <div className="mt-3 flex items-center gap-2">
                   <Image src="/star.png" alt="star" width={20} height={20} />
 
-                  <span className="text-lg font-bold text-white">
+                  <span className="text-base font-bold text-black dark:text-white lg:text-lg lg:text-white">
                     {movie.vote_average.toFixed(1)}
-                    <span className="text-gray-300"> /10</span>
+                    <span className="text-gray-400 dark:text-gray-500">
+                      {" "}
+                      /10
+                    </span>
                   </span>
                 </div>
 
-                <p className="mt-4 w-[420px] text-sm leading-6 text-white line-clamp-4">
+                <p className="mt-4 line-clamp-4 w-full text-sm leading-6 text-gray-700 dark:text-gray-300 lg:w-[420px] lg:text-white">
                   {movie.overview}
                 </p>
 
-                <div className="mt-6">
+                <div className="mt-5 lg:mt-6">
                   {movie.trailer ? (
                     <TrailerPlayer trailer={movie.trailer} />
                   ) : (
-                    <p className="text-white">Trailer not available</p>
+                    <p className="text-black dark:text-white lg:text-white">
+                      Trailer not available
+                    </p>
                   )}
                 </div>
               </div>
@@ -92,9 +101,6 @@ export const Head = ({ movies }: HeadProps) => {
           </CarouselItem>
         ))}
       </CarouselContent>
-
-      <CarouselPrevious className="left-8" />
-      <CarouselNext className="right-8" />
     </Carousel>
   );
 };

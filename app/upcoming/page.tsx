@@ -1,7 +1,7 @@
-"use client";
 import Header from "@/app/_components/header";
-import { MovieList } from "@/app/_components/movieList";
 import Footer from "@/app/_components/footer";
+import { MovieList } from "@/app/_components/movieList";
+
 import {
   Pagination,
   PaginationContent,
@@ -11,62 +11,76 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useEffect, useState } from "react";
 
 const API_KEY = "502c1ed7cb7d214347c2fb36ce415a4e";
-const ENDPOINT_UPCOMING = `/movie/upcoming?language=en-US&page=1`;
 const BASE_URL = "https://api.themoviedb.org/3";
-const API_URL = `${BASE_URL}${ENDPOINT_UPCOMING}&api_key=${API_KEY}`;
 
-export default function UpcomingPage() {
-  const [upcomingMovies, setUpcomingMovies] = useState<any[]>([]);
-  const fetchUpcomingMovies = async () => {
-    const response = await fetch(API_URL);
-    const data = await response.json();
-    setUpcomingMovies(data.results);
-  };
-  useEffect(() => {
-    fetchUpcomingMovies();
-  }, []);
+export default async function UpcomingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page } = await searchParams;
+
+  const currentPage = Number(page) || 1;
+
+  const response = await fetch(
+    `${BASE_URL}/movie/upcoming?language=en-US&page=${currentPage}&api_key=${API_KEY}`,
+  );
+
+  const data = await response.json();
+
+  const totalPages = Math.min(data.total_pages, 500);
 
   return (
-    <div className="w-full min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col">
       <Header />
 
       <main className="flex-1">
         <MovieList
           genre="Upcoming"
           link="/upcoming"
-          movies={upcomingMovies}
+          movies={data.results}
           seemore={false}
         />
+
         <div className="flex justify-center py-8">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" />
+                <PaginationPrevious
+                  href={`/upcoming?page=${Math.max(currentPage - 1, 1)}`}
+                />
               </PaginationItem>
 
-              <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  1
-                </PaginationLink>
-              </PaginationItem>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
+                const pageNumber = index + 1;
+
+                return (
+                  <PaginationItem key={pageNumber}>
+                    <PaginationLink
+                      href={`/upcoming?page=${pageNumber}`}
+                      isActive={currentPage === pageNumber}
+                    >
+                      {pageNumber}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
+              {totalPages > 5 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
 
               <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationNext href="#" />
+                <PaginationNext
+                  href={`/upcoming?page=${Math.min(
+                    currentPage + 1,
+                    totalPages,
+                  )}`}
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>

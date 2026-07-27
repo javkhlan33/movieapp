@@ -40,35 +40,36 @@ export default async function MovieDetailPage({
   }
 
   return (
-    <div className="w-full min-h-screen">
+    <div className="min-h-screen w-full bg-white text-black dark:bg-black dark:text-white">
       <Header />
 
-      <main className="mx-auto max-w-[1080px] px-20 py-8">
-        <div className="flex justify-between items-start mb-8">
+      <main className="mx-auto max-w-[1080px] px-4 py-6 sm:px-6 lg:px-20 lg:py-8">
+        <div className="mb-4 flex items-start justify-between">
           <div>
-            <h1 className="text-4xl font-bold">{movie.title}</h1>
+            <h1 className="text-2xl font-bold text-black dark:text-white lg:text-4xl">
+              {movie.title}
+            </h1>
 
-            <p className="text-gray-500 mt-2">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {movie.release_date} • {movie.runtime} min
             </p>
           </div>
 
-          <div>
-            ⭐ {movie.vote_average.toFixed(1)}
-            <span className="text-gray-400"> /10</span>
+          <div className="text-right">
+            <div className="text-base font-semibold text-black dark:text-white">
+              ⭐ {movie.vote_average.toFixed(1)}
+              <span className="text-gray-400 dark:text-gray-500"> /10</span>
+            </div>
+
+            {/* хүсвэл энд vote_count нэмэж болно */}
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {movie.vote_count}
+            </p>
           </div>
         </div>
 
-        <div className="mt-8 flex gap-6">
-          <Image
-            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-            alt={movie.title}
-            width={290}
-            height={430}
-            className="h-[430px] w-[290px] rounded-lg object-cover"
-          />
-
-          <div className="relative flex-1 h-[430px]">
+        <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
+          <div className="relative h-[210px] w-full lg:order-2 lg:h-[430px] lg:flex-1">
             <Image
               src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
               alt={movie.title}
@@ -77,52 +78,85 @@ export default async function MovieDetailPage({
             />
 
             {trailer && (
-              <div className="absolute bottom-5 left-5">
+              <div className="absolute bottom-4 left-4">
                 <TrailerPlayer trailer={trailer} />
               </div>
             )}
           </div>
+
+          <Image
+            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            alt={movie.title}
+            width={100}
+            height={148}
+            className="hidden h-[430px] w-[290px] rounded-lg object-cover lg:block"
+          />
         </div>
 
-        <div className="mt-6">
-          <div className="flex gap-2 flex-wrap">
-            {movie.genres.map((genre: any) => (
-              <span
-                key={genre.id}
-                className="rounded-full border px-3 py-1 text-xs"
-              >
-                {genre.name}
-              </span>
-            ))}
+        <div className="mt-5 flex gap-4">
+          {/* Poster */}
+          <div className="shrink-0 lg:hidden">
+            <Image
+              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+              alt={movie.title}
+              width={100}
+              height={148}
+              className="h-[148px] w-[100px] rounded-lg object-cover"
+            />
           </div>
 
-          <p className="mt-6 text-gray-700 leading-7">{movie.overview}</p>
+          {/* Description */}
+          <div className="flex-1">
+            <div className="mb-3 flex flex-wrap gap-2">
+              {movie.genres.map((genre: any) => (
+                <span
+                  key={genre.id}
+                  className="rounded-full border border-gray-300 px-3 py-1 text-xs text-black dark:border-zinc-700 dark:text-white"
+                >
+                  {genre.name}
+                </span>
+              ))}
+            </div>
+
+            <p className="text-sm leading-6 text-gray-700 dark:text-gray-300">
+              {movie.overview}
+            </p>
+          </div>
         </div>
 
-        <div className="mt-12">
-          <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-3xl font-semibold">More like this</h2>
+        <div className="mt-10">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-black dark:text-white lg:text-3xl">
+              More like this
+            </h2>
 
             <Link
               href={`/movie/${id}/morelikethis`}
-              className="flex items-center gap-2 text-sm"
+              className="flex items-center gap-2 text-sm text-black dark:text-white"
             >
               <span>See more</span>
               <ChevronRight size={16} />
             </Link>
           </div>
 
-          <div className="grid grid-cols-5 gap-6">
-            {similarMovies.results.slice(0, 5).map((movie: any) => (
-              <MovieCard
-                key={movie.id}
-                id={movie.id}
-                image={movie.poster_path}
-                title={movie.title}
-                rating={movie.vote_average}
-                size="small"
-              />
-            ))}
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 lg:gap-6">
+            {similarMovies.results
+              .slice(0, 5)
+              .map((movie: any, index: number) => (
+                <div
+                  key={movie.id}
+                  className={`${index >= 2 ? "hidden sm:block" : ""}
+                  ${index >= 3 ? "sm:hidden lg:block" : ""}`}
+                >
+                  <MovieCard
+                    id={movie.id}
+                    image={movie.poster_path}
+                    title={movie.title}
+                    rating={movie.vote_average}
+                    size="small"
+                  />
+                </div>
+              ))}
           </div>
         </div>
       </main>
