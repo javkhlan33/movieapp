@@ -68,7 +68,7 @@ export default function Header() {
         {/* Logo */}
         {!isSearchOpen && (
           <Link href="/" className="flex items-center">
-            <Image src="/logo (1).png" alt="Movie Z" width={92} height={20} />
+            <Image src="/Logo (1).png" alt="Movie Z" width={92} height={20} />
           </Link>
         )}
 
