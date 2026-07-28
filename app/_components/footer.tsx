@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid gap-10 lg:grid-cols-3 lg:items-start">
           {/* Logo */}
           <div>
-            <Image src="/logo.png" alt="logo" width={92} height={20} />
+            <Image src="/Logo.png" alt="logo" width={92} height={20} />
 
             <p className="mt-4 text-sm text-indigo-200">
               © 2024 Movie Z. All Rights Reserved.
