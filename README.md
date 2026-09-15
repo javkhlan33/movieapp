@@ -22,9 +22,9 @@ A modern and responsive movie discovery web application built with Next.js and T
 - REST API
 - Vercel
 
-## 📸 Screenshots
+## 📸 Screenshot
 
-> Screenshots coming soon.
+![Movie App](./public/movieapp-home.png)
 
 ## 🚀 Getting Started
 
