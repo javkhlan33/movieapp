@@ -33,4 +33,5 @@ A modern and responsive movie discovery web application built with Next.js and T
 ```bash
 git clone https://github.com/javkhlan33/movieapp.git
 cd movieapp
-<img width="1200" height="798" alt="image" src="https://github.com/user-attachments/assets/d2e41d3a-f33d-438e-ad29-fa42f5eea940" />
+<!-- update -->
+
